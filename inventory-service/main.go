@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/segmentio/kafka-go"
 )
@@ -22,8 +23,13 @@ var inventory = map[string]int{
 func main() {
 	log.Println("Starting inventory-service...")
 
+	brokers := os.Getenv("KAFKA_BROKER")
+	if brokers == "" {
+		brokers = "kafka:9092"
+	}
+
 	r := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:  []string{"localhost:9092"},
+		Brokers:  []string{brokers},
 		Topic:    "orders",
 		GroupID:  "inventory-service",
 		MinBytes: 10e3, // 10KB

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/segmentio/kafka-go"
@@ -19,8 +20,13 @@ type Order struct {
 func main() {
 	log.Println("Starting order-service...")
 
+	brokers := os.Getenv("KAFKA_BROKER")
+	if brokers == "" {
+		brokers = "kafka:9092"
+	}
+
 	writer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  []string{"localhost:9092"},
+		Brokers:  []string{brokers},
 		Topic:    "orders",
 		Balancer: &kafka.LeastBytes{},
 	})
